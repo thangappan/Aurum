@@ -1,37 +1,49 @@
-from tastypie.resources import ModelResource,Resource
+# Using tastypie RESTful methods and classes
+from tastypie.resources import Resource
 from tastypie.cache import SimpleCache
-from bitcoin.models import Count
-from webservice import  GetResponse
+from tastypie import fields
+
+# our own webservice
+from webservice import FetchBlockCount 
 
 
-class GetBlockCount(ModelResource):
-	
+# Block count resource
+class GetBlockCount(Resource):
+
+	# Field to be populated in the API
+	count = fields.IntegerField(attribute='count',null=True)
+	error = fields.CharField(attribute='error',null=True)
+
+	# defining meta fields 
 	class Meta:
 		resource_name = 'count'
-		queryset = Count.objects.all()
-		excludes = ['id']
-		cache = SimpleCache(timeout=10)
-
-
-class FetchBlockCount(object):
-
-	def __init__(self):
-		self.url = "http://blockchain.info/q/getblockcount"
-
-	def get_count(self):
-		data = GetResponse(self.url)
-		if data and type(data) != type({}):
-			data = { 'count' : data }
-		return data 
-			
-
-class BlockCount(Resource):
-
-	class Meta:
-		resource_name = 'block_count'
 		object_class = FetchBlockCount
+		cache = SimpleCache(timeout=10)  # this is for 'caching'
+		excludes = ['error']
+		print "Checking meta opetions"
 
+	# --------------------------------------------------------------------------
+	# -- Taken References from following link --
+	# http://django-tastypie.readthedocs.org/en/latest/non_orm_data_sources.html
+	# --------------------------------------------------------------------------
+
+	# Following methods to be overriden to act like as a ORM object.
+	def get_object_list(self,request):
+		results = []
+		newobj = FetchBlockCount()
+
+		print self.Meta.excludes
+		if not newobj.error :
+			self.Meta.excludes = ['error']
+		if not newobj.count:
+			self.Meta.excludes = ['count']
+		print self.Meta.excludes
+
+		results.append(newobj)
+		return results
+	
 	def obj_get_list(self,request=None,**kwargs):
-		obj = FetchBlockCount()
-		response = obj.get_count()
-		return [obj]
+		return self.get_object_list(request)
+
+	def obj_get(self,request=None,**kwargs):
+		return self.get_object_list(request)[0]

@@ -4,10 +4,11 @@ from django.conf.urls import patterns, include, url
 # from django.contrib import admin
 # admin.autodiscover()
 
-from bitcoin.api import GetBlockCount,BlockCount
+from bitcoin.api import GetBlockCount
+from tastypie.api import Api
 
-count_resource = GetBlockCount()
-non_resource = BlockCount()
+api = Api()
+api.register(GetBlockCount())
 
 urlpatterns = patterns('',
     # Examples:
@@ -21,6 +22,5 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
 
 	# REST API
-	(r'api/',include(count_resource.urls)),
-	(r'rest/',include(non_resource.urls)),
+	(r'api/',include(api.urls)),
 )
