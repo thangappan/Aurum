@@ -11,7 +11,7 @@ class GetResponse(object):
 	def submit(self,url):
 		try:
 			self.response = urllib2.urlopen(url).read()
-		except (URLError,HTTPError),e:
+		except (urllib2.URLError,urllib2.HTTPError),e:
 			self.response = { "error" : e }
 
 
@@ -36,7 +36,3 @@ class FetchBlockCount(object):
 if __name__ == '__main__':	
 	robj = GetResponse("https://blockchain.info/q/getblockcount")
 	print robj.response
-			
-			
-		
-
