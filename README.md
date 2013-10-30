@@ -70,6 +70,11 @@ a2ensite api.nithini.com
 # reload the apache2 configuration 
 service apache2 reload 
 
+
+# add the host name into your DNS entries 
+vim /etc/hosts
+<IP address> api.nithini.com
+
 # Now HIT the following API to know the working condition of our deployment process
 http://api.nithini.com/api/v1/count/1
 
