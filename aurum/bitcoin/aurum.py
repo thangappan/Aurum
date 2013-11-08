@@ -3,6 +3,7 @@
 import urllib2
 
 
+# Base class to hit any kind of REST url and get the response
 class GetResponse(object):
 
 	def __init__(self,url):
@@ -15,6 +16,7 @@ class GetResponse(object):
 			self.error = e 
 
 
+# This class is used to get the response of getblockcount resource
 class FetchBlockCount(GetResponse):
 
 	def __init__(self):
@@ -27,6 +29,7 @@ class FetchBlockCount(GetResponse):
 			self.count = int(self.response)
 
 
+# Fetching the market data.
 class FetchMarketData(GetResponse):
 
 	def __init__(self):
@@ -38,6 +41,8 @@ class FetchMarketData(GetResponse):
 		if self.response:
 			self.market_data = self.response
 
+
+# Just for testing purpose.	
 if __name__ == '__main__':
 	obj = FetchBlockCount()	
 	obj.submit()
