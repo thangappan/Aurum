@@ -73,7 +73,7 @@ def obtain_market_data(link):
 	print timestamp,high,low,date_time,avg
 	return { 'timestamp' : str(timestamp), 'highest_price' : float(high), \
 			 'lowest_price' : float(low) , 'average_price' : float(avg), \
-			  'datetime' : date_time }
+			  'date_time' : date_time }
 		
 
 # For each currency configured in the database will be updated for each
@@ -81,10 +81,10 @@ def obtain_market_data(link):
 # configured to EXCHANGE_LINKS variable.
 for c_obj in db_currencies:
 
-	currency = c_obj.currency_name
+	currency = c_obj.name
 	for e_obj in db_exchanges: 
-		e_code = e_obj.exchange_code
-		e_name = e_obj.exchange_name
+		e_code = e_obj.code
+		e_name = e_obj.name
 		if e_code.lower() not in EXCHANGE_LINKS:
 			continue  # skipping when no link for exchange code.
 		e_details = EXCHANGE_LINKS[e_code.lower()]
