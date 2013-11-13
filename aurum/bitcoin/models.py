@@ -3,7 +3,7 @@ from django.db import models
 # Exchange model
 class Exchange(models.Model):
 
-	e_id = models.IntegerField(primary_key=True)
+	e_id = models.AutoField(primary_key=True)
 	code = models.CharField(max_length=20)
 	name = models.CharField(max_length=50)
 	created_at = models.DateTimeField(auto_now_add=True)
@@ -18,7 +18,7 @@ class Exchange(models.Model):
 # Currency model
 class Currency(models.Model):
 
-	c_id = models.IntegerField(primary_key=True)
+	c_id = models.AutoField(primary_key=True)
 	name = models.CharField(max_length=10)
 	created_at = models.DateTimeField(auto_now_add=True)
 
