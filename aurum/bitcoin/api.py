@@ -3,9 +3,10 @@ from tastypie.resources import Resource,ModelResource,ALL,ALL_WITH_RELATIONS
 from tastypie.cache import SimpleCache
 from tastypie import fields
 from datetime import datetime,timedelta
+from tastypie.serializers import Serializer
 
 # our own webservice
-from webservice import FetchBlockCount ,FetchMarketData
+from webservice import FetchBlockCount
 
 from bitcoin.models import Currency,Exchange,MarketData
 
@@ -22,6 +23,7 @@ class GetBlockCount(Resource):
 		resource_name = 'count'
 		object_class = FetchBlockCount
 		cache = SimpleCache(timeout=10)  # this is for 'caching'
+		include_resource_uri = False
 		excludes = ['error']
 		print "Checking meta opetions"
 
@@ -44,24 +46,28 @@ class GetBlockCount(Resource):
 	def obj_get(self,request=None,**kwargs):
 		return self.get_object_list(request)[0]
 
-
+# Exchange resource
 class CurrencyResource(ModelResource):
 
 	class Meta:
 		queryset = Currency.objects.all()
 		resource_name = 'currency'
+		include_resource_uri = False
 		excludes = ['created_at','c_id']
+		cache = SimpleCache(timeout=10)  # this is for 'caching'
 		filtering = {
 			'name' : ['exact']
 		}
 
-
+# Exchange Resource
 class ExchangeResource(ModelResource):
 	
 	class Meta:
 		queryset = Exchange.objects.all()
 		resource_name = 'exchange'
-		excludes = ['created_at','e_id']
+		include_resource_uri = False
+		excludes = ['created_at','e_id','name']
+		cache = SimpleCache(timeout=10)  # this is for 'caching'
 		filtering = {
 			'code' : ['exact']
 		}
@@ -75,28 +81,50 @@ class MarketDataResource(ModelResource):
 
 	class Meta:
 
-		#queryset = MarketData.objects.filter(date_time__range=(datetime.now() - timedelta(minutes=5), datetime.now()))
 		queryset = MarketData.objects.all()
 		excludes = ['created_at','id','timestamp','date_time']
 		resource_name = 'market_data'
+		include_resource_uri = False
+		cache = SimpleCache(timeout=10)  # this is for 'caching'
 		filtering = {
 			'date_time' : ALL, 
 			'currency' : ALL_WITH_RELATIONS,
 			'exchange' : ALL_WITH_RELATIONS
 		}
 
-	# Currently handling the way to add filters for 5m,1h,7d,
-	def get_object_list(self,request):
-		filter = request.GET.get('interval',None) # Accessing 'interval' GET param from the request.
-		results = super(MarketDataResource,self).get_object_list(request)
-		if filter == '5m':
-			output = results.filter(date_time__range=(datetime.now() - timedelta(minutes=5),datetime.now())).order_by('-date_time')
-		elif filter == '1h':
-			output = results.filter(date_time__range=(datetime.now() - timedelta(hours=1),datetime.now())).order_by('-date_time')
-		elif filter == '7d':
-			output = results.filter(date_time__range=(datetime.now() - timedelta(days=7),datetime.now())).order_by('-date_time')
-		elif filter == '30d':
-			output = results.filter(date_time__range=(datetime.now() - timedelta(days=30),datetime.now())).order_by('-date_time')
+	 # Static method to handle common input for minutes,hours,days
+	@staticmethod	
+	def handle_interval(u_input):
+		if not u_input:
+			return None
+	
+		identifier = u_input[-1]
+		number = u_input[:-1]
+		i_dict = { 'hours' : 0, 'minutes' : 0, 'days' : 0 }
+		i_map = { 'h' : 'hours', 'm' : 'minutes', 'd': 'days' }
+		
+		if identifier in i_map:
+			i_dict[i_map[identifier]] = int(number)
 		else:
+			print "Please specify proper input ends with (d,m,h)"
+			return None
+		return datetime.now() - timedelta(**i_dict)
+
+
+	# Currently handling the way to add filter interval for m,h,d 
+	def get_object_list(self,request):
+		u_filter = request.GET.get('interval',None) # Accessing 'interval' GET param from the request.
+		results = super(MarketDataResource,self).get_object_list(request)
+		date_obj = MarketDataResource.handle_interval(u_filter)
+		if date_obj is None:
 			output = results.order_by('-date_time')
-		return output	
+		else:
+			output = results.filter(date_time__range=(date_obj,datetime.now()))
+		return output.order_by('-date_time')
+
+
+	# overriding the method to remove unwanted fields in the response
+	def alter_list_data_to_serialize(self, request, data):
+		if 'meta' in data:
+			del data['meta']
+		return data
