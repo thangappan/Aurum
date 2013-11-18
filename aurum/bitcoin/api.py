@@ -82,7 +82,7 @@ class MarketDataResource(ModelResource):
 	class Meta:
 
 		queryset = MarketData.objects.all()
-		excludes = ['created_at','id','timestamp','date_time']
+		excludes = ['created_at','id','timestamp']
 		resource_name = 'market_data'
 		include_resource_uri = False
 		cache = SimpleCache(timeout=10)  # this is for 'caching'
@@ -107,7 +107,7 @@ class MarketDataResource(ModelResource):
 			i_dict[i_map[identifier]] = int(number)
 		else:
 			print "Please specify proper input ends with (d,m,h)"
-			return None
+			return False
 		return datetime.now() - timedelta(**i_dict)
 
 
@@ -118,13 +118,48 @@ class MarketDataResource(ModelResource):
 		date_obj = MarketDataResource.handle_interval(u_filter)
 		if date_obj is None:
 			output = results.order_by('-date_time')
+		elif date_obj is False:
+			output = MarketData.objects.none() # creating empty queryset when argument is invalid.
 		else:
 			output = results.filter(date_time__range=(date_obj,datetime.now()))
 		return output.order_by('-date_time')
 
+	@staticmethod
+	def find_max_min(a_input):
+		fields = ('highest_price','lowest_price','average_price')
+		values = [list(),list(),list()]
+
+		# Iterating the final data objects and storing the result 
+		# of specified fields in another list to find max and min values.
+		for d_json in a_input:
+			for key,val in d_json.data.iteritems():
+				try:
+					pos = fields.index(key)
+					values[pos].append(val)
+				except ValueError,e:
+					pass
+			for k in fields:
+				del d_json.data[k]
+
+
+		# Iterating the list which has the values of specified fields
+		# then find the max,min values 
+		a_output = list()
+		for v in values:
+			if v:
+				a_output.append(max(v))
+			else:
+				a_output.append(None)
+
+		# Preparing the final output dictionary 	
+		output = { k : v for k,v in zip(fields,a_output) }
+		return output
 
 	# overriding the method to remove unwanted fields in the response
+	# also calling find_max_min to max,min values of specified fields.
 	def alter_list_data_to_serialize(self, request, data):
 		if 'meta' in data:
 			del data['meta']
-		return data
+		values = MarketDataResource.find_max_min(data['objects'])
+		data.update(values)
+		return data 

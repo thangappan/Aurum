@@ -70,9 +70,12 @@ def obtain_market_data(link):
 	high = output.get('high').get('value')
 	low  = output.get('low').get('value')
 	avg  = output.get('avg').get('value')
-	print timestamp,high,low,date_time,avg
+	buy  = output.get('buy').get('value')
+	sell = output.get('sell').get('value')
+	print timestamp,high,low,date_time,avg,buy,sell
 	return { 'timestamp' : str(timestamp), 'highest_price' : float(high), \
 			 'lowest_price' : float(low) , 'average_price' : float(avg), \
+			 'buy_price' : float(buy), 'sell_price' : float(sell),\
 			  'date_time' : date_time }
 		
 
