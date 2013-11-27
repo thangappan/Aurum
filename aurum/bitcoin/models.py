@@ -48,3 +48,19 @@ class MarketData(models.Model):
 
 	def __unicode__(self):
 		return self.average_price
+
+
+#Google News 
+class NewsModel(models.Model):
+
+	news_id = models.AutoField(primary_key=True)
+	name = models.CharField(max_length=200)
+	link = models.URLField(max_length=500)
+	pub_date = models.DateTimeField()
+	shared_count = models.IntegerField(default=0,null=True,blank=True)
+	read_count = models.IntegerField(default=0,null=True,blank=True)
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	class Meta:
+		db_table = 'news'

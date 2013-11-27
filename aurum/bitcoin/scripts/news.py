@@ -30,7 +30,7 @@ db_fields = ('name','link','pub_date')
 # making our application to sys.path
 # If this script configured in cron-job then need to configure PYTHONPATH appropriately. 
 # Need to choose either way sys.path or PYTHONPATH env
-sys.path.append('../')
+sys.path.append('../../')
 
 # Enabling settings page to get database params
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "aurum.settings")

@@ -4,11 +4,13 @@ from django.conf.urls import patterns, include, url
 # from django.contrib import admin
 # admin.autodiscover()
 
-from bitcoin.api import GetBlockCount
+from bitcoin.api import GetBlockCount,MarketDataResource,NewsResource
 from tastypie.api import Api
 
-api = Api()
+api = Api(api_name="aurum")
 api.register(GetBlockCount())
+api.register(MarketDataResource())
+api.register(NewsResource())
 
 urlpatterns = patterns('',
     # Examples:
@@ -22,5 +24,5 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
 
 	# REST API
-	(r'api/',include(api.urls)),
+	(r'',include(api.urls)),
 )
