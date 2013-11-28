@@ -50,6 +50,10 @@ class MarketData(models.Model):
 		return self.average_price
 
 
+<<<<<<< HEAD
+=======
+#Google News 
+>>>>>>> e7c2ebb212396be72a8b5b94cafe0ffeea2612c9
 class NewsModel(models.Model):
 
 	news_id = models.AutoField(primary_key=True)
@@ -60,6 +64,10 @@ class NewsModel(models.Model):
 	read_count = models.IntegerField(default=0,null=True,blank=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e7c2ebb212396be72a8b5b94cafe0ffeea2612c9
 	class Meta:
 		db_table = 'news'
