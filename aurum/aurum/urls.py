@@ -9,15 +9,10 @@ from tastypie.api import Api
 
 api = Api(api_name="aurum")
 api.register(GetBlockCount())
-<<<<<<< HEAD
-api.register(NewsResource())
 api.register(MarketDataResource())
+api.register(NewsResource())
 
 from django.views.generic import TemplateView
-=======
-api.register(MarketDataResource())
-api.register(NewsResource())
->>>>>>> e7c2ebb212396be72a8b5b94cafe0ffeea2612c9
 
 urlpatterns = patterns('',
     # Examples:
@@ -30,10 +25,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
 
-<<<<<<< HEAD
 	# aurum REST API
-=======
-	# REST API
->>>>>>> e7c2ebb212396be72a8b5b94cafe0ffeea2612c9
 	(r'',include(api.urls)),
 )
