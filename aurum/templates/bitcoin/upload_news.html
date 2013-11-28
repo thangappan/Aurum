@@ -1,0 +1,82 @@
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"> </script>
+	<script>
+
+
+			function add_params()
+			{
+				var input = JSON.stringify(
+					{
+						"link" : "http://news.google.com/news/url?sa=t&fd=R&usg=AFQjCNHJCGqRlrEOQRPdfgCX0O8IfpMKiA&url=http://finance.yahoo.com/blogs/daily-ticker/bitcoin-heading-toward-high-could-1-million-175818638.html",
+						"name" : "My Example2 News Post from Jquery",
+						"pub_date" : "Thu, 28 Nov 2013 09:42:52 GMT"
+					}
+				);
+
+				return input;
+			}
+
+
+			function update_params()
+			{
+				var input = JSON.stringify(
+					{
+						"shared_count" : 3,
+						"read_count" : 2
+					}
+				);
+				return input;
+			}
+			
+			function update()
+			{
+
+				var input = update_params();
+			
+				$.ajax({
+					url: 'http://localhost:8000/aurum/news/13/',
+					type: 'PUT',
+					dataType: 'json',
+					data: input,
+					contentType: "application/json",
+					success : function(result){
+						message = "Successfully Modified the data <br>The JSON response is<br>";
+						$("#output").html(message + JSON.stringify(result));
+					},
+				});
+			}
+
+			function add()
+			{
+
+				var input = add_params();
+			
+				$.ajax({
+					url: 'http://localhost:8000/aurum/news/',
+					type: 'POST',
+					dataType: 'json',
+					data: input,
+					contentType: "application/json",
+					success : function(result){
+						message = "Successfully Modified the data <br>The JSON response is<br>";
+						$("#output").html(message + JSON.stringify(result));
+					},
+				});
+			}
+
+
+		$(function() {
+
+			$("#add").click(add);
+			$("#update").click(update);
+		});
+
+	</script>
+</head>
+<body>
+	<div id="output"> </div>
+	<button id="add"> Add Details </button>
+	<button id="update"> Update Details </button>
+</body>
+</html>

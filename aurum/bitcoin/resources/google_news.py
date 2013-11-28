@@ -7,6 +7,13 @@ from tastypie import fields
 # News model from bitcoin
 from bitcoin.models import NewsModel
 
+# Converting pub date string to date object.
+from dateutil import parser
+
+# To make aware datetime
+from django.utils import timezone
+
+
 
 class NewsResource(ModelResource):
 
@@ -29,13 +36,26 @@ class NewsResource(ModelResource):
 	# Just getting the value from DB and saving the DB model by adding it.
 	#--------------------------------------------------------
 	def hydrate_shared_count(self,bundle):
-		count = NewsModel.objects.get(pk=bundle.obj.pk).shared_count
-		bundle.data['shared_count'] += int(count)
+		try:
+			count = NewsModel.objects.get(pk=bundle.obj.pk).shared_count
+			bundle.data['shared_count'] += int(count)
+		except NewsModel.DoesNotExist,e:
+			pass
 		return bundle
 
 	def hydrate_read_count(self,bundle):
-		count = NewsModel.objects.get(pk=bundle.obj.pk).read_count
-		bundle.data['read_count'] += int(count)
+		try:
+			count = NewsModel.objects.get(pk=bundle.obj.pk).read_count
+			bundle.data['read_count'] += int(count)
+		except NewsModel.DoesNotExist,e:
+			pass
+		return bundle
+
+
+	def hydrate_pub_date(self,bundle):
+		date_string = bundle.data.get('pub_date',None)
+		if date_string:
+			bundle.data['pub_date'] = parser.parse(date_string).replace(tzinfo=timezone.utc)
 		return bundle
 
 	# Making the ORM wise ordering happen by overriding the following method
@@ -48,6 +68,20 @@ class NewsResource(ModelResource):
 		elif f_shared == 'read':
 			results = results.order_by('-read_count')
 		return results
+
+
+	# Override the below method to check the object existance based on the news title.
+	def obj_create(self,bundle,**kwargs):
+		try:
+			n_object = NewsModel.objects.get(name=bundle.data['name'])	
+			n_object.shared_count += bundle.obj.shared_count
+			n_object.read_count += bundle.obj.read_count
+			n_object.save()
+			bundle.obj = n_object
+		except NewsModel.DoesNotExist,e:
+			super(NewsResource,self).obj_create(bundle,**kwargs)
+		return bundle
+
 
 	#--------------------------------------------------------
 	# Dehydration Cycle = From data model to JSON input 

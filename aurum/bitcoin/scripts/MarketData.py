@@ -4,15 +4,18 @@ import sys,os
 import json,urllib2
 import datetime
 
+
 # making our application to sys.path
 # If this script configured in cron-job then need to configure PYTHONPATH appropriately. 
 # Need to choose either way sys.path or PYTHONPATH env
-sys.path.append('../')
+sys.path.append('../../')
 
 # Enabling settings page to get database params
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "aurum.settings")
 
 from bitcoin.models import Currency,Exchange,MarketData
+
+from django.utils import timezone
 
 # getting the currencies and exchanges.
 db_currencies = Currency.objects.all()
@@ -47,7 +50,7 @@ def fetch_repsonse(url):
 def convert_to_local(epoch):
 	epoch = int(epoch)
 	local_time = float('{0}.{1}'.format( int( epoch / 1000000 ), int( epoch % 1000000 ) ) )
-	return datetime.datetime.fromtimestamp(local_time)
+	return datetime.datetime.fromtimestamp(local_time).replace(tzinfo=timezone.utc)
 
 
 # Function to fetch market data 

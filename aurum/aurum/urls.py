@@ -4,15 +4,19 @@ from django.conf.urls import patterns, include, url
 # from django.contrib import admin
 # admin.autodiscover()
 
-from bitcoin.api import GetBlockCount
+from bitcoin.api import GetBlockCount,MarketDataResource,NewsResource
 from tastypie.api import Api
 
-api = Api()
+api = Api(api_name="aurum")
 api.register(GetBlockCount())
+api.register(NewsResource())
+api.register(MarketDataResource())
+
+from django.views.generic import TemplateView
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'aurum.views.home', name='home'),
+    url(r'^html/$', TemplateView.as_view(template_name="bitcoin/upload_news.html")),
     # url(r'^aurum/', include('aurum.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
@@ -21,6 +25,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
 
-	# REST API
-	(r'api/',include(api.urls)),
+	# aurum REST API
+	(r'',include(api.urls)),
 )
