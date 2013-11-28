@@ -8,11 +8,12 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+import os.path
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': r'C:\Users\mohanstx\Python\Aurum\aurum\database.db',                      # Or path to database file if using sqlite3.
+        'NAME': os.path.join(os.path.dirname(__file__), "../database.db"),
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
@@ -29,7 +30,7 @@ ALLOWED_HOSTS = []
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'India/Calcutta'
+TIME_ZONE = 'Asia/Calcutta'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -107,11 +108,12 @@ ROOT_URLCONF = 'aurum.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'aurum.wsgi.application'
 
+
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-	r'C:\Users\mohanstx\Python\Aurum\aurum\templates',
+	os.path.join(os.path.dirname(__file__), "../templates"),
 )
 
 INSTALLED_APPS = (
@@ -159,3 +161,7 @@ LOGGING = {
 }
 
 TASTYPIE_DEFAULT_FORMATS = ['json']
+
+# Setting no limit per page 
+API_LIMIT_PER_PAGE = 0
+

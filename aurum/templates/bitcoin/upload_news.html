@@ -9,7 +9,7 @@
 				var input = JSON.stringify(
 					{
 						"link" : "http://news.google.com/news/url?sa=t&fd=R&usg=AFQjCNHJCGqRlrEOQRPdfgCX0O8IfpMKiA&url=http://finance.yahoo.com/blogs/daily-ticker/bitcoin-heading-toward-high-could-1-million-175818638.html",
-						"name" : "My Example2 News Post from Jquery",
+						"name" : "My Example News Post from Jquery",
 						"pub_date" : "Thu, 28 Nov 2013 09:42:52 GMT"
 					}
 				);
@@ -35,13 +35,13 @@
 				var input = update_params();
 			
 				$.ajax({
-					url: 'http://localhost:8000/aurum/news/13/',
+					url: 'http://localhost:8000/aurum/news/11/',
 					type: 'PUT',
 					dataType: 'json',
 					data: input,
 					contentType: "application/json",
 					success : function(result){
-						message = "Successfully Modified the data <br>The JSON response is<br>";
+						message = "Successfully added/modified the data <br>The JSON response is<br>";
 						$("#output").html(message + JSON.stringify(result));
 					},
 				});

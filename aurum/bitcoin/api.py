@@ -2,8 +2,6 @@
 from tastypie.resources import Resource,ModelResource,ALL,ALL_WITH_RELATIONS
 from tastypie.cache import SimpleCache
 from tastypie import fields
-<<<<<<< HEAD
-
 
 # block count API
 from bitcoin.resources.blockcount import *

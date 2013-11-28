@@ -74,8 +74,8 @@ class NewsResource(ModelResource):
 	def obj_create(self,bundle,**kwargs):
 		try:
 			n_object = NewsModel.objects.get(name=bundle.data['name'])	
-			n_object.shared_count += bundle.obj.shared_count
-			n_object.read_count += bundle.obj.read_count
+			n_object.shared_count += bundle.data.get('shared_count',1)
+			n_object.read_count += bundle.data.get('read_count',1)
 			n_object.save()
 			bundle.obj = n_object
 		except NewsModel.DoesNotExist,e:
