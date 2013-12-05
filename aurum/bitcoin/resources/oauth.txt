@@ -1,0 +1,45 @@
+Dependency module
+
+	django-oauth2-provider 
+
+User will be created in django along with client ( client_id, client_secret)
+
+To create access tokens need 
+
+	* username
+	* password
+	* grant_type
+	* scope
+	* client_id
+	* client_secret
+
+	The final request would like the following one
+
+	 curl -d "client_id=06b4bd0862afbdea3d61*client_secret=a0ff4f0b89ce9313de9a92b66a0e5c08d3b32379&grant_type=password&username=aurum&password=aurum&scope=write"  http://138.12.21.232:8000/oauth2/access_token
+
+	This will give response with client token and that can be used for accessing our aurum API
+
+	{"access_token": "6f5c27ebf5a8d24c1c058d2182a9ab2c414d0117", "scope": "read write read+write", "expires_in": 31535999, "refresh_token": "52ae31b3dbf7f570bab702bb1d54ed52e2b6009e"}
+
+
+Accessing google NEWS API 
+
+	curl -v  http://localhost:8000/aurum/news
+		It doesn't require authentication as it is GET method
+
+	For posting data, need to set the following in request header
+
+	'Authorization','OAuth 7f645c9d9fc6dc8d415074d3bad57583de34b282'  ( access_token )
+
+	Refer the following file for example from JQuery 
+
+	C:\Users\mohanstx\Python\Aurum\aurum\templates\bitcoin\upload_news.html
+
+
+Modified the following files 
+
+ 	* settings.py
+ 	* urls.py
+ 	* google_news.py
+ 	* authentication.py ( added )
+ 	* upload_news.html
