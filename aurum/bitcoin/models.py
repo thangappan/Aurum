@@ -12,7 +12,7 @@ class Exchange(models.Model):
 		db_table = 'exchange'
 
 	def __unicode__(self):
-		return self.code
+		return self.name
 
 
 # Currency model
@@ -32,34 +32,19 @@ class Currency(models.Model):
 # Marketdata model
 class MarketData(models.Model):
 	
-	currency = models.ForeignKey(Currency)
-	exchange = models.ForeignKey(Exchange)
-	highest_price = models.CharField(max_length=20)
-	lowest_price = models.CharField(max_length=20)
-	average_price = models.CharField(max_length=20)
-	buy_price = models.CharField(max_length=20)
-	sell_price = models.CharField(max_length=20)
-	timestamp = models.CharField(max_length=20)
-	date_time = models.DateTimeField()
-	created_at = models.DateTimeField(auto_now_add=True)
+	currency 	  = models.ForeignKey(Currency)
+	exchange 	  = models.ForeignKey(Exchange)
+	trans_id	  = models.CharField(max_length=30,primary_key=True)
+	volume        = models.CharField(max_length=20)
+	price 		  = models.CharField(max_length=20)
+	opening_price = models.CharField(max_length=20,null=True)
+	closing_price = models.CharField(max_length=20,null=True)
+	timestamp     = models.CharField(max_length=20)
+	date_time     = models.DateTimeField()
+	created_at    = models.DateTimeField(auto_now_add=True)
 
 	class Meta:
 		db_table = 'market_data'
 
 	def __unicode__(self):
-		return self.average_price
-
-
-class NewsModel(models.Model):
-
-	news_id = models.AutoField(primary_key=True)
-	name = models.CharField(max_length=200,unique=True)
-	link = models.URLField(max_length=500)
-	pub_date = models.DateTimeField()
-	shared_count = models.IntegerField(default=0,null=True,blank=True)
-	read_count = models.IntegerField(default=0,null=True,blank=True)
-	created_at = models.DateTimeField(auto_now_add=True)
-	updated_at = models.DateTimeField(auto_now=True)
-
-	class Meta:
-		db_table = 'news'
+		return self.price
