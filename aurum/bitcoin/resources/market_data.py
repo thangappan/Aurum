@@ -83,6 +83,21 @@ class MarketDataResource(ModelResource):
 			output = results.filter(date_time__range=(date_obj,datetime.now()))
 		return output.order_by('-date_time')
 
+	def check_filtering(self, field_name, filter_type='exact', filter_bits=None):
+		u_filters_map = { 'currency' : u'name', 'exchange' : u'code' }
+		if field_name in u_filters_map and not filter_bits:
+			filter_bits.append(u_filters_map[field_name])
+			self.u_filters.append(field_name)
+		return super(MarketDataResource,self).check_filtering(field_name, filter_type,filter_bits)
+
+	def apply_filters(self,request,applicable_filters):
+		return super(MarketDataResource,self).apply_filters(request,applicable_filters)
+
+	def build_filters(self,filters=None):
+		self.u_filters = list()
+		orm_filters = super(MarketDataResource,self).build_filters(filters)
+		return orm_filters
+
 	@staticmethod
 	def find_max_min(a_input):
 		fields = ('highest_price','lowest_price','average_price')
@@ -114,6 +129,26 @@ class MarketDataResource(ModelResource):
 		output = { k : v for k,v in zip(fields,a_output) }
 		return output
 
+	def dehydrate_currency(self,bundle):
+		bundle.data['currency'] = bundle.data['currency'].data['name']
+		return bundle.data['currency']
+
+	def dehydrate_exchange(self,bundle):
+		bundle.data['exchange'] = bundle.data['exchange'].data['code']
+		return bundle.data['exchange']
+
+	def make_it_common(self,data):
+		common = dict()
+		print "user filtetrs",self.u_filters
+		for d_json in data['objects']:
+			for field in self.u_filters:
+				if field in d_json.data:
+					common[field] = d_json.data[field]
+					d_json.data.pop(field)
+		if common:
+			data.update(common)
+		return data 
+
 	# overriding the method to remove unwanted fields in the response
 	# also calling find_max_min to max,min values of specified fields.
 	def alter_list_data_to_serialize(self, request, data):
@@ -121,4 +156,5 @@ class MarketDataResource(ModelResource):
 			del data['meta']
 		values = MarketDataResource.find_max_min(data['objects'])
 		data.update(values)
+		data = self.make_it_common(data)
 		return data 
